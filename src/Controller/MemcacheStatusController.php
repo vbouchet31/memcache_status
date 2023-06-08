@@ -63,12 +63,21 @@ class MemcacheStatusController extends ControllerBase {
     }
 
     $items = [];
-    foreach ($servers as $server) {
-      [$host, $port] = explode(':', $server);
-      $items = array_merge($items, $this->sendMemcacheCommand('lru_crawler metadump ' . $slab, $host, $port, 'parseDumpResult'));
+    foreach ($servers as $s) {
+      [$host, $port] = explode(':', $s);
+      $tmp = $this->sendMemcacheCommand('lru_crawler metadump ' . $slab, $host, $port, 'parseDumpResult');
+
+      // Enrich the items with the source server information.
+      array_walk($tmp, function(&$item, $key, $s) {$item['server'] = $s;}, $s);
+
+      $items = array_merge($items, $tmp);
     }
 
     $headers = [
+      [
+        'data' => $this->t('Server'),
+        'class' => $server === 'all' ? '' : 'hidden',
+      ],
       [
         'data' => $this->t('Slab #'),
         'class' => $slab === 'all' ? '' : 'hidden',
@@ -83,6 +92,10 @@ class MemcacheStatusController extends ControllerBase {
     $rows = [];
     foreach ($items as $item) {
       $rows[] = [
+        [
+          'data' => $item['server'],
+          'class' => $server === 'all' ? '' : 'hidden',
+        ],
         [
           'data' => $item['slab'],
           'class' => $slab === 'all' ? '' : 'hidden',
@@ -219,6 +232,9 @@ class MemcacheStatusController extends ControllerBase {
 
     $aggregate = ($server === 'all');
     $server = ($server === 'all') ? 'total' : $server;
+
+    // @TODO: Aggregate does not work properly for slabs and may even not make
+    // sense. See https://www.drupal.org/project/memcache/issues/3365640.
 
     $slabs = $memcache->stats($bin, 'slabs', $aggregate)[$bin][$server];
     $items = $memcache->stats($bin, 'items', $aggregate)[$bin][$server];
