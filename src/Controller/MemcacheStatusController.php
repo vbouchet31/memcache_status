@@ -104,7 +104,7 @@ class MemcacheStatusController extends ControllerBase {
         $item['cid'],
         ($item['expire'] === -1) ? $this->t('Never') : $item['expire'],
         $item['fetch'] ? $item['last_access'] : $this->t('Never'),
-        $item['size'],
+        format_size($item['size']),
       ];
     }
 
@@ -258,15 +258,15 @@ class MemcacheStatusController extends ControllerBase {
     $headers = [
       $this->t('Slab #'),
       $this->t('Item size'),
-      $this->t('Usage'),
+      $this->t('Usage (items)'),
     ];
 
     $rows = [];
     foreach ($data as $id => $values) {
       $rows[] = [
         Link::fromTextandUrl($id, Url::fromUri('base:/admin/reports/memcache-status/' . str_replace('/', '!', $server_original) . '/slab/' . $id))->toString(),
-        $values['chunk_size'],
-        $values['used_chunks'] . ' / ' . $values['total_chunks'] . ' (' . (($values['used_chunks']*100)/$values['total_chunks']) . '%)',
+        format_size($values['chunk_size']),
+        $values['used_chunks'] . ' / ' . $values['total_chunks'] . ' (' . round((($values['used_chunks']*100)/$values['total_chunks']), 2) . '%)',
       ];
     }
 
@@ -324,7 +324,7 @@ class MemcacheStatusController extends ControllerBase {
     $rows = [
       'usage' => [
         $this->t('Usage'),
-        $stats[$bin]['total']['bytes'] . ' / ' . $stats[$bin]['total']['limit_maxbytes'] . ' (' . (($stats[$bin]['total']['bytes']*100)/$stats[$bin]['total']['limit_maxbytes']) . '%)'
+        format_size($stats[$bin]['total']['bytes']) . ' / ' . format_size($stats[$bin]['total']['limit_maxbytes']) . ' (' . round((($stats[$bin]['total']['bytes']*100)/$stats[$bin]['total']['limit_maxbytes']), 2) . '%)'
       ],
     ];
 
@@ -332,7 +332,7 @@ class MemcacheStatusController extends ControllerBase {
     foreach ($stats[$bin] as $server => $bin_stats) {
       $headers[] = Link::fromTextandUrl($server, Url::fromUri('base:/admin/reports/memcache-status/' . str_replace('/', '!', $server) . '/slabs'))->toString();
 
-      $rows['usage'][] = $bin_stats['bytes'] . ' / ' . $bin_stats['limit_maxbytes'] . ' (' . (($bin_stats['bytes']*100)/$bin_stats['limit_maxbytes']) . '%)';
+      $rows['usage'][] = format_size($bin_stats['bytes']) . ' / ' . format_size($bin_stats['limit_maxbytes']) . ' (' . round((($bin_stats['bytes']*100)/$bin_stats['limit_maxbytes']), 2) . '%)';
     }
 
     \Drupal::messenger()->addWarning($this->t('This is work in progress interface. Check the "Raw data" fieldset to see all the available data.'));
