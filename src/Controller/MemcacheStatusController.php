@@ -316,23 +316,43 @@ class MemcacheStatusController extends ControllerBase {
       return [];
     }
 
+    $config = \Drupal::config('memcache_status.settings');
+    $server_statistics = array_fill_keys($config->get('server_statistics'), TRUE);
+
+    $rows = [];
+    foreach ($server_statistics as $key => $value) {
+      $row = [];
+      $index = 2;
+      foreach ($stats[$bin] as $server => $bin_stats) {
+        if ($server === 'total') {
+          continue;
+        }
+
+        if (!isset($bin_stats[$key])) {
+          $row = [];
+          continue 2;
+        }
+
+        $row[$index++] = $bin_stats[$key];
+      }
+
+      if (!empty($row)) {
+        $row[0] = $key;
+        $row[1] = $stats['total'][$key] ?? '';
+      }
+      ksort($row);
+      $rows[] = $row;
+    }
+
     $headers = [
       '',
       Link::fromTextandUrl($this->t('Totals'), Url::fromUri('base:/admin/reports/memcache-status/all/slabs'))->toString(),
     ];
-
-    $rows = [
-      'usage' => [
-        $this->t('Usage'),
-        format_size($stats[$bin]['total']['bytes']) . ' / ' . format_size($stats[$bin]['total']['limit_maxbytes']) . ' (' . round((($stats[$bin]['total']['bytes']*100)/$stats[$bin]['total']['limit_maxbytes']), 2) . '%)'
-      ],
-    ];
-
-    unset($stats[$bin]['total']);
     foreach ($stats[$bin] as $server => $bin_stats) {
+      if ($server === 'total') {
+        continue;
+      }
       $headers[] = Link::fromTextandUrl($server, Url::fromUri('base:/admin/reports/memcache-status/' . str_replace('/', '!', $server) . '/slabs'))->toString();
-
-      $rows['usage'][] = format_size($bin_stats['bytes']) . ' / ' . format_size($bin_stats['limit_maxbytes']) . ' (' . round((($bin_stats['bytes']*100)/$bin_stats['limit_maxbytes']), 2) . '%)';
     }
 
     \Drupal::messenger()->addWarning($this->t('This is work in progress interface. Check the "Raw data" fieldset to see all the available data.'));

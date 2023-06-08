@@ -1,3 +1,11 @@
+memcache_status.settings:
+  path: /admin/config/system/memcache-status
+  defaults:
+    _form: Drupal\memcache_status\Form\MemcacheStatusSettingsForm
+    _title: Memcache Status Settings
+  requirements:
+    _permission: administer site configuration
+
 memcache_status.reports:
   path: '/admin/reports/memcache-status'
   defaults:
