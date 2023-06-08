@@ -1,0 +1,3 @@
+access memcache status:
+  title: 'Access memcache status'
+  description: 'Review Memcache stats and browse the content'

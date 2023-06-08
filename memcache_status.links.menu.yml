@@ -1,0 +1,5 @@
+memcache_status.reports:
+  title: Memcache status
+  description: View statistics and browse memcache content.
+  parent: system.admin_reports
+  route_name: memcache_status.reports
