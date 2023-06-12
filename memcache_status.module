@@ -1,0 +1,151 @@
+<?php
+
+/**
+ * Implements hook_views_data().
+ */
+function memcache_status_views_data() {
+  return [
+    'memcache_status_dump_data' => [
+      'table' => [
+        'group' => t('Memcache status'),
+        'provider' => 'memcache_status',
+        'base' => [
+          'field' => 'cas',
+          'title' => t('Memcache items'),
+        ],
+      ],
+      'server' => [
+        'title' => t('Server'),
+        'field' => [
+          'id' => 'standard',
+        ],
+        'sort' => [
+          'id' => 'standard',
+        ],
+        'filter' => [
+          'id' => 'string',
+        ],
+        'argument' => [
+          'id' => 'string',
+        ],
+      ],
+      'bin' => [
+        'title' => t('Bin'),
+        'field' => [
+          'id' => 'standard',
+        ],
+        'sort' => [
+          'id' => 'standard',
+        ],
+        'filter' => [
+          'id' => 'string',
+        ],
+        'argument' => [
+          'id' => 'string',
+        ],
+      ],
+      'slab' => [
+        'title' => t('Slab'),
+        'field' => [
+          'id' => 'numeric',
+        ],
+        'sort' => [
+          'id' => 'standard',
+        ],
+        'filter' => [
+          'id' => 'numeric',
+        ],
+        'argument' => [
+          'id' => 'numeric',
+        ],
+      ],
+      'expire' => [
+        'title' => t('Expire'),
+        'field' => [
+          'id' => 'numeric',
+        ],
+        'sort' => [
+          'id' => 'standard',
+        ],
+        'filter' => [
+          'id' => 'numeric',
+        ],
+        'argument' => [
+          'id' => 'numeric',
+        ],
+      ],
+      'last_access' => [
+        'title' => t('Last access'),
+        'field' => [
+          'id' => 'date',
+        ],
+        'sort' => [
+          'id' => 'date',
+        ],
+        'filter' => [
+          'id' => 'date',
+        ],
+      ],
+      'cid' => [
+        'title' => t('Cid'),
+        'field' => [
+          'id' => 'standard',
+        ],
+        'sort' => [
+          'id' => 'standard',
+        ],
+        'filter' => [
+          'id' => 'string',
+        ],
+        'argument' => [
+          'id' => 'string',
+        ],
+      ],
+      'fetched' => [
+        'title' => t('Fetched'),
+        'field' => [
+          'id' => 'boolean',
+        ],
+        'sort' => [
+          'id' => 'standard',
+        ],
+        'filter' => [
+          'id' => 'boolean',
+          'label' => t('Fetched'),
+          'type' => 'yes-no',
+          'use_equal' => TRUE,
+        ],
+      ],
+      'size' => [
+        'title' => t('Size'),
+        'field' => [
+          'id' => 'numeric',
+        ],
+        'sort' => [
+          'id' => 'standard',
+        ],
+        'filter' => [
+          'id' => 'numeric',
+        ],
+        'argument' => [
+          'id' => 'numeric',
+        ],
+      ],
+      'cas' => [
+        'title' => t('CAS'),
+        'field' => [
+          'id' => 'numeric',
+        ],
+        'sort' => [
+          'id' => 'standard',
+        ],
+        'filter' => [
+          'id' => 'numeric',
+        ],
+        'argument' => [
+          'id' => 'numeric',
+        ],
+      ],
+    ],
+  ];
+}

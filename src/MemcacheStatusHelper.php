@@ -3,6 +3,7 @@
 namespace Drupal\memcache_status;
 
 use Drupal\Core\Database\Connection;
+use Drupal\Core\Site\Settings;
 use Drupal\Core\State\State;
 use Drupal\memcache\Driver\MemcacheDriverFactory;
 
@@ -101,8 +102,14 @@ class MemcacheStatusHelper {
     // Insert all the items via a unique query.
     // @TODO: Check on a large memcache instance if it causes performance issue.
     $query = $this->database->insert('memcache_status_dump_data')
-      ->fields(['server', 'bin', 'slab', 'cid', 'expire', 'last_access', 'cas', 'fetched', 'size']);
+      ->fields(['server', 'bin', 'slab', 'key_prefix', 'cid', 'expire', 'last_access', 'cas', 'fetched', 'size']);
     foreach ($items as $item) {
+      // Skip the items which are not related to this site.
+      // @TODO: Add a configuration so it is possible to not filter. We may
+      // need to add the key_prefix in the database to allow filtering.
+      if (!empty(Settings::get('memcache')['key_prefix']) && $item['key_prefix'] !== Settings::get('memcache')['key_prefix']) {
+        continue;
+      }
       $query->values($item);
     }
     $query->execute();
@@ -158,12 +165,21 @@ class MemcacheStatusHelper {
       'key' => $key,
     ];
 
-    // @TODO: It does not work if "key_prefix" is set.
     // @TODO: It does not handle the case where the original key was longer
     // than 255 characters and has been hashed. See DriveBase::key().
     // CID is urlencoded by Drupal but also by Memcache hence we need to
-    // decode twice.
-    [$elements['bin'], $elements['cid']] = explode(':', urldecode(urldecode($key)), 2);
+    // decode twice. Not sure we can get the original key has it is hashed.
+
+    // Handle the case where there is a key_prefix.
+    $elements['key_prefix'] = '';
+    if (!empty(Settings::get('memcache')['key_prefix'])) {
+      [$elements['key_prefix'], $elements['bin'], $elements['cid']] = explode(':', urldecode(urldecode($key)), 3);
+    }
+    else {
+      [$elements['bin'], $elements['cid']] = explode(':', urldecode(urldecode($key)), 2);
+    }
+
+    // The cid starts with a "-". Remove it.
     $elements['cid'] = substr($elements['cid'], 1);
 
     return $elements;
@@ -206,6 +222,7 @@ class MemcacheStatusHelper {
         'server' => $data['host'] . ':' . $data['port'],
         'bin' => $key_elements['bin'],
         'slab' => (int) $matches[6],
+        'key_prefix' => $key_elements['key_prefix'],
         'cid' => $key_elements['cid'],
         'expire' => (int) $matches[2],
         'last_access' => (int) $matches[3],

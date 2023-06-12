@@ -26,6 +26,13 @@ function memcache_status_schema() {
         'default' => '',
         'description' => 'The name of the bin associated with the item.',
       ],
+      'key_prefix' => [
+        'type' => 'varchar',
+        'not null' => TRUE,
+        'length' => 255,
+        'default' => '',
+        'description' => 'The key_prefix used to identify the site.',
+      ],
       'slab' => [
         'type' => 'int',
         'not null' => TRUE,
@@ -74,7 +81,7 @@ function memcache_status_schema() {
         'description' => 'Unique integer that uniquely identifies the item.'
       ]
     ],
-    'primary key' => ['bin', 'cid'],
+    'primary key' => ['cas'],
     'indexes' => [
       'server' => ['server'],
       'bin' => ['bin'],
