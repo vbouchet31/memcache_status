@@ -1,0 +1,4 @@
+services:
+  memcache_status.memcache_helper:
+    class: Drupal\memcache_status\MemcacheStatusHelper
+    arguments: ['@database', '@memcache.factory', '@state']

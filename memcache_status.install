@@ -1,0 +1,88 @@
+<?php
+
+/**
+ * @file
+ * Install and uninstall functions for memcache_status module.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function memcache_status_schema() {
+  $schema['memcache_status_dump_data'] = [
+    'description' => 'Memcache status dump data',
+    'fields' => [
+      'server' => [
+        'type' => 'varchar',
+        'not null' => TRUE,
+        'length' => 255,
+        'default' => '',
+        'description' => 'The name:port of the server storing the item.',
+      ],
+      'bin' => [
+        'type' => 'varchar',
+        'not null' => TRUE,
+        'length' => 255,
+        'default' => '',
+        'description' => 'The name of the bin associated with the item.',
+      ],
+      'slab' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'unsigned' => TRUE,
+        'size' => 'tiny', //TODO: Check this.
+        'description' => 'The id of the slab the item is stored into.'
+      ],
+      'cid' => [
+        'type' => 'varchar',
+        'not null' => TRUE,
+        'length' => 255,
+        'default' => '',
+      ],
+      'expire' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'The Unix timestamp of the expiration date.',
+      ],
+      'last_access' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'The Unix timestamp of the last access date.',
+      ],
+      'fetched' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Whether an item has been fetched before.',
+        'size' => 'tiny',
+      ],
+      'size' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'unsigned' => TRUE,
+        'description' => 'The size of the item in bytes.'
+      ],
+      'cas' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'unsigned' => TRUE,
+        'description' => 'Unique integer that uniquely identifies the item.'
+      ]
+    ],
+    'primary key' => ['bin', 'cid'],
+    'indexes' => [
+      'server' => ['server'],
+      'bin' => ['bin'],
+      'slab' => ['slab'],
+      'cid' => ['cid'],
+      'last_access' => ['last_access'],
+    ],
+  ];
+
+  return $schema;
+}

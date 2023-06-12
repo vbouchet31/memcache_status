@@ -1,0 +1,6 @@
+services:
+  memcache_status.commands:
+    class: Drupal\memcache_status\Commands\MemcacheStatusCommands
+    arguments: ['@memcache_status.memcache_helper', '@state', '@date.formatter']
+    tags:
+      -  { name: drush.command }
