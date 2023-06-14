@@ -1,5 +1,11 @@
 <?php
 
+use Drupal\Core\Cache\Cache;
+use Drupal\Core\Site\Settings;
+use Drupal\Core\Url;
+use Drupal\views\Plugin\views\cache\CachePluginBase;
+use Drupal\views\ViewExecutable;
+
 /**
  * Implements hook_views_data().
  */
@@ -23,7 +29,7 @@ function memcache_status_views_data() {
           'id' => 'standard',
         ],
         'filter' => [
-          'id' => 'string',
+          'id' => 'dropdown',
         ],
         'argument' => [
           'id' => 'string',
@@ -38,7 +44,7 @@ function memcache_status_views_data() {
           'id' => 'standard',
         ],
         'filter' => [
-          'id' => 'string',
+          'id' => 'dropdown',
         ],
         'argument' => [
           'id' => 'string',
@@ -148,4 +154,73 @@ function memcache_status_views_data() {
       ],
     ],
   ];
+}
+
+/**
+ * Implements hook_views_post_render().
+ */
+function memcache_status_views_post_render(ViewExecutable $view, array &$output, CachePluginBase $cache) {
+  if ($view->id() !== 'memcache_items') {
+    return;
+  }
+
+  // Add a custom cache tag, so we can invalidate the result after refreshing
+  // the memcache items in the database.
+  $output['#cache']['tags'] = Cache::mergeTags($output['#cache']['tags'] ?? [], ['memcache_list:items']);
+}
+
+/**
+ * Implements hook_views_pre_view().
+ */
+function memcache_status_views_pre_view(ViewExecutable $view, $display_id, array &$args) {
+  if ($view->id() !== 'memcache_items') {
+    return;
+  }
+
+  // If there is only one memcache server, there is no need to expose it.
+  if (count(Settings::get('memcache')['servers']) === 1) {
+    $view->removeHandler($view->current_display, 'filter', 'server');
+    $view->removeHandler($view->current_display, 'field', 'server');
+  }
+}
+
+/**
+ * Implements hook_views_post_execute().
+ */
+function memcache_status_views_post_execute(ViewExecutable $view) {
+  if ($view->id() !== 'memcache_items') {
+    return;
+  }
+
+  // Remove the filters if there is no result and display a message with
+  // a refresh button.
+  if (count($view->result) === 0) {
+    foreach ($view->getHandlers('filter') as $filter) {
+      $view->removeHandler($view->current_display, 'filter', $filter['id']);
+    }
+
+    $view->attachment_before[] = [
+      '#type' => 'fieldset',
+      [
+        '#markup' => t('Memcache data dump has not been executed yet.'),
+      ],
+      [
+        '#type' => 'link',
+        '#title' => t('Refresh data'),
+        '#url' => Url::fromUri('base:/admin/reports/memcache-status/items/refresh'),
+        '#attributes' => [
+          'class' => ['button', 'button--primary'],
+          'style' => 'margin-left: var(--space-s);'
+        ],
+      ],
+    ];
+  }
+  else {
+    $last_refresh_time = \Drupal::state()->get('memcache_status.last_dump_data_refresh_time');
+    $view->attachment_before[] = [
+      '#prefix' => '<p class="text-align-right">',
+      '#suffx' => '</p>',
+      '#markup' => t('Last refresh: @refresh_date - <a href="#">Refresh</a>', ['@refresh_date' => \Drupal::service('date.formatter')->format($last_refresh_time)]),
+    ];
+  }
 }

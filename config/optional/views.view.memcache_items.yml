@@ -599,7 +599,7 @@ display:
             last_access: '0'
             size: '0'
       pager:
-        type: mini
+        type: full
         options:
           offset: 0
           items_per_page: 100
@@ -608,14 +608,17 @@ display:
           tags:
             next: ››
             previous: ‹‹
+            first: '« First'
+            last: 'Last »'
           expose:
-            items_per_page: false
+            items_per_page: true
             items_per_page_label: 'Items per page'
-            items_per_page_options: '5, 10, 25, 50'
+            items_per_page_options: '50,100,250,500,1000,2500,5000,10000,15000,20000,50000'
             items_per_page_options_all: false
             items_per_page_options_all_label: '- All -'
             offset: false
             offset_label: Offset
+          quantity: 5
       exposed_form:
         type: basic
         options:
@@ -637,6 +640,92 @@ display:
       sorts: {  }
       arguments: {  }
       filters:
+        server:
+          id: server
+          table: memcache_status_dump_data
+          field: server
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: dropdown
+          operator: or
+          value: {  }
+          group: 1
+          exposed: true
+          expose:
+            operator_id: server_op
+            label: Server
+            description: ''
+            use_operator: false
+            operator: server_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: server
+            required: false
+            remember: false
+            multiple: true
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              content_editor: '0'
+              administrator: '0'
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          reduce_duplicates: false
+        bin:
+          id: bin
+          table: memcache_status_dump_data
+          field: bin
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: dropdown
+          operator: or
+          value: {  }
+          group: 1
+          exposed: true
+          expose:
+            operator_id: bin_op
+            label: Bin
+            description: ''
+            use_operator: false
+            operator: bin_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: bin
+            required: false
+            remember: false
+            multiple: true
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              content_editor: '0'
+              administrator: '0'
+            reduce: 0
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          reduce_duplicates: 0
         cid:
           id: cid
           table: memcache_status_dump_data
@@ -679,6 +768,10 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
+      filter_groups:
+        operator: AND
+        groups:
+          1: AND
       style:
         type: table
         options:

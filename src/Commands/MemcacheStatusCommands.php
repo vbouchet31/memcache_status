@@ -2,6 +2,7 @@
 
 namespace Drupal\memcache_status\Commands;
 
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Datetime\DateFormatter;
 use Drupal\Core\State\State;
 use Drupal\memcache_status\MemcacheStatusHelper;
@@ -52,6 +53,10 @@ class MemcacheStatusCommands extends DrushCommands {
       $servers,
       $slabs
     );
+
+    if ($count) {
+      Cache::invalidateTags(['memcache_list:items']);
+    }
 
     $this->output()->writeln(dt('@count items have been dumped into the database.', ['@count' => $count]));
   }
