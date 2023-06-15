@@ -6,6 +6,16 @@ memcache_status.settings:
   requirements:
     _permission: administer site configuration
 
+memcache_status.refresh:
+  path: '/admin/reports/memcache-status/items/refresh'
+  defaults:
+    _form: Drupal\memcache_status\Form\ItemsRefreshForm
+    _title: Refresh items
+  options:
+    _admin_route: TRUE
+  requirements:
+    _permission: access memcache status
+
 memcache_status.reports:
   path: '/admin/reports/memcache-status'
   defaults:

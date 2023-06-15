@@ -185,19 +185,18 @@ function memcache_status_views_pre_view(ViewExecutable $view, $display_id, array
 }
 
 /**
- * Implements hook_views_post_execute().
+ * Implements hook_views_pre_render().
  */
-function memcache_status_views_post_execute(ViewExecutable $view) {
+function memcache_status_views_pre_render($view) {
   if ($view->id() !== 'memcache_items') {
     return;
   }
 
-  // Remove the filters if there is no result and display a message with
-  // a refresh button.
-  if (count($view->result) === 0) {
-    foreach ($view->getHandlers('filter') as $filter) {
-      $view->removeHandler($view->current_display, 'filter', $filter['id']);
-    }
+  $last_refresh_time = \Drupal::state()->get('memcache_status.last_dump_data_refresh_time');
+
+  // Remove the exposed form if the table is empty.
+  if (empty($last_refresh_time)) {
+    $view->exposed_widgets = [];
 
     $view->attachment_before[] = [
       '#type' => 'fieldset',
@@ -206,7 +205,7 @@ function memcache_status_views_post_execute(ViewExecutable $view) {
       ],
       [
         '#type' => 'link',
-        '#title' => t('Refresh data'),
+        '#title' => t('Fetch data'),
         '#url' => Url::fromUri('base:/admin/reports/memcache-status/items/refresh'),
         '#attributes' => [
           'class' => ['button', 'button--primary'],
@@ -216,7 +215,6 @@ function memcache_status_views_post_execute(ViewExecutable $view) {
     ];
   }
   else {
-    $last_refresh_time = \Drupal::state()->get('memcache_status.last_dump_data_refresh_time');
     $view->attachment_before[] = [
       '#prefix' => '<p class="text-align-left align-left">',
       '#suffx' => '</p>',
@@ -230,7 +228,45 @@ function memcache_status_views_post_execute(ViewExecutable $view) {
     $view->attachment_before[] = [
       '#prefix' => '<p class="text-align-right align-right">',
       '#suffx' => '</p>',
-      '#markup' => t('Last refresh: @refresh_date - <a href="#">Refresh</a>', ['@refresh_date' => \Drupal::service('date.formatter')->format($last_refresh_time)]),
+      '#markup' => t('Last refresh: @refresh_date - <a href="/admin/reports/memcache-status/items/refresh">Refresh</a>', ['@refresh_date' => \Drupal::service('date.formatter')->format($last_refresh_time)]),
     ];
   }
+}
+
+/**
+ * Batch processor to refresh items in the database.
+ */
+function memcache_status_process_refresh_batch(string $server, string $slab_ids, &$context) {
+  [$host, $port] = explode(':', $server);
+  $items = \Drupal::service('memcache_status.memcache_helper')->sendMemcacheCommand('lru_crawler metadump ' . $slab_ids, $host, $port, 'parseDumpResult');
+
+  if (empty($items)) {
+    return;
+  }
+
+  if (!isset($context['results']['items'])) {
+    $context['results']['items'] = 0;
+  }
+
+  $query = Drupal::database()->insert('memcache_status_dump_data')
+    ->fields(['server', 'bin', 'slab', 'key_prefix', 'cid', 'expire', 'last_access', 'cas', 'fetched', 'size', 'raw_key']);
+  foreach ($items as $item) {
+    // Skip the items which are not related to this site.
+    // @TODO: Add a configuration so it is possible to not filter. We may
+    // need to add the key_prefix in the database to allow filtering.
+    if (!empty(Settings::get('memcache')['key_prefix']) && $item['key_prefix'] !== Settings::get('memcache')['key_prefix']) {
+      continue;
+    }
+    $query->values($item);
+    $context['results']['items']++;
+  }
+  $query->execute();
+}
+
+/**
+ * Finish function for the batch refreshing the items in the database.
+ */
+function memcache_status_finish_refresh_batch($success, $results, $operations) {
+  Cache::invalidateTags(['memcache_list:items']);
+  Drupal::state()->set('memcache_status.last_dump_data_refresh_time', time());
 }

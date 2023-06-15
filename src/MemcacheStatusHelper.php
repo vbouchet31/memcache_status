@@ -51,7 +51,7 @@ class MemcacheStatusHelper {
    * @return int|null
    * @throws \Exception
    */
-  public function refreshDumpData(array $server_names, array $slabs_ids) {
+  public function refreshDumpData(array $server_names = ['all'], array $slabs_ids = ['all']) {
     $bin = 'default';
     $bin = $this->getBinMapping($bin);
     /** @var $memcache \Drupal\memcache\DrupalMemcacheInterface */
@@ -102,7 +102,7 @@ class MemcacheStatusHelper {
     // Insert all the items via a unique query.
     // @TODO: Check on a large memcache instance if it causes performance issue.
     $query = $this->database->insert('memcache_status_dump_data')
-      ->fields(['server', 'bin', 'slab', 'key_prefix', 'cid', 'expire', 'last_access', 'cas', 'fetched', 'size']);
+      ->fields(['server', 'bin', 'slab', 'key_prefix', 'cid', 'expire', 'last_access', 'cas', 'fetched', 'size', 'raw_key']);
     foreach ($items as $item) {
       // Skip the items which are not related to this site.
       // @TODO: Add a configuration so it is possible to not filter. We may
@@ -218,6 +218,12 @@ class MemcacheStatusHelper {
 
       $key_elements = $this->decodeItemKey($matches[1]);
 
+      // @TODO
+      if (strlen($matches[1]) > 255) {
+        //dsm($matches[1]);
+        $matches[1] = substr($matches[1], 0, 255);
+      }
+
       $items[$key_elements['cid']] = [
         'server' => $data['host'] . ':' . $data['port'],
         'bin' => $key_elements['bin'],
@@ -229,6 +235,7 @@ class MemcacheStatusHelper {
         'cas' => (int) $matches[4],
         'fetched' => $matches[5] === 'yes' ? 1 : 0,
         'size' => (int) $matches[7],
+        'raw_key' => $matches[1],
       ];
     }
 
