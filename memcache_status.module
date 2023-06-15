@@ -125,7 +125,7 @@ function memcache_status_views_data() {
       'size' => [
         'title' => t('Size'),
         'field' => [
-          'id' => 'numeric',
+          'id' => 'file_size',
         ],
         'sort' => [
           'id' => 'standard',
@@ -218,7 +218,17 @@ function memcache_status_views_post_execute(ViewExecutable $view) {
   else {
     $last_refresh_time = \Drupal::state()->get('memcache_status.last_dump_data_refresh_time');
     $view->attachment_before[] = [
-      '#prefix' => '<p class="text-align-right">',
+      '#prefix' => '<p class="text-align-left align-left">',
+      '#suffx' => '</p>',
+      '#markup' => t('Items @from - @to of @total', [
+        '@from' => ($view->getItemsPerPage() * $view->getCurrentPage()) + 1,
+        '@to' => ($view->getItemsPerPage() * $view->getCurrentPage()) + count($view->result),
+        '@total' => $view->total_rows,
+      ]),
+    ];
+
+    $view->attachment_before[] = [
+      '#prefix' => '<p class="text-align-right align-right">',
       '#suffx' => '</p>',
       '#markup' => t('Last refresh: @refresh_date - <a href="#">Refresh</a>', ['@refresh_date' => \Drupal::service('date.formatter')->format($last_refresh_time)]),
     ];
