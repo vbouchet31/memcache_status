@@ -218,12 +218,6 @@ class MemcacheStatusHelper {
 
       $key_elements = $this->decodeItemKey($matches[1]);
 
-      // @TODO
-      if (strlen($matches[1]) > 255) {
-        //dsm($matches[1]);
-        $matches[1] = substr($matches[1], 0, 255);
-      }
-
       $items[$key_elements['cid']] = [
         'server' => $data['host'] . ':' . $data['port'],
         'bin' => $key_elements['bin'],
@@ -235,7 +229,7 @@ class MemcacheStatusHelper {
         'cas' => (int) $matches[4],
         'fetched' => $matches[5] === 'yes' ? 1 : 0,
         'size' => (int) $matches[7],
-        'raw_key' => $matches[1],
+        'raw_key' => urldecode(urldecode($matches[1])),
       ];
     }
 

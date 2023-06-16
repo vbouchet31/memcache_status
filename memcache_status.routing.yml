@@ -16,6 +16,26 @@ memcache_status.refresh:
   requirements:
     _permission: access memcache status
 
+memcache_status.item.get:
+  path: '/admin/reports/memcache-status/item/{key}'
+  defaults:
+    _controller: Drupal\memcache_status\Controller\ItemView::render
+    _title: View item
+  options:
+    _admin_route: TRUE
+  requirements:
+    _permission: access memcache status
+
+memcache_status.item.flush:
+  path: '/admin/reports/memcache-status/item/{key}/flush'
+  defaults:
+    _form: Drupal\memcache_status\Form\ItemFlushConfirmForm
+    _title: Flush item
+  options:
+    _admin_route: TRUE
+  requirements:
+    _permission: access memcache status
+
 memcache_status.reports:
   path: '/admin/reports/memcache-status'
   defaults:

@@ -107,6 +107,21 @@ function memcache_status_views_data() {
           'id' => 'string',
         ],
       ],
+      'raw_key' => [
+        'title' => t('Raw key'),
+        'field' => [
+          'id' => 'standard',
+        ],
+        'sort' => [
+          'id' => 'standard',
+        ],
+        'filter' => [
+          'id' => 'string',
+        ],
+        'argument' => [
+          'id' => 'string',
+        ],
+      ],
       'fetched' => [
         'title' => t('Fetched'),
         'field' => [
