@@ -554,13 +554,13 @@ display:
           group_type: group
           admin_label: ''
           plugin_id: custom
-          label: 'Custom text'
+          label: Edit
           exclude: true
           alter:
             alter_text: true
             text: Edit
             make_link: true
-            path: '/admin/reports/memcache-status/item/{{ bin }}:{{ cid }}/edit'
+            path: 'admin/reports/memcache-status/item/{{ raw_key }}/edit'
             absolute: false
             external: false
             replace_spaces: false
@@ -698,6 +698,7 @@ display:
             nothing: nothing
             nothing_2: nothing_2
             nothing_1: nothing_1
+            raw_key: '0'
             server: '0'
             bin: '0'
             slab: '0'
