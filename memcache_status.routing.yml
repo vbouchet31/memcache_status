@@ -29,7 +29,7 @@ memcache_status.item.get:
 memcache_status.item.flush:
   path: '/admin/reports/memcache-status/item/{key}/flush'
   defaults:
-    _form: Drupal\memcache_status\Form\ItemFlushConfirmForm
+    _form: Drupal\memcache_status\Form\ItemFlushForm
     _title: Flush item
   options:
     _admin_route: TRUE

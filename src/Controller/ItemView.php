@@ -60,7 +60,7 @@ class ItemView extends ControllerBase {
         [
           '#type' => 'link',
           '#title' => $this->t('Edit'),
-          // @TODO: Use Route instead.
+          // @TODO: Use Route instead and forward the destination.
           '#url' => Url::fromUri('base:/admin/reports/memcache-status/item/' . $key . '/edit'),
           '#attributes' => [
             'class' => ['button', 'button--primary'],
@@ -69,7 +69,7 @@ class ItemView extends ControllerBase {
         [
           '#type' => 'link',
           '#title' => $this->t('Flush'),
-          // @TODO: Use Route instead.
+          // @TODO: Use Route instead and forward the destination.
           '#url' => Url::fromUri('base:/admin/reports/memcache-status/item/' . rawurlencode($key) . '/flush'),
           '#attributes' => [
             'class' => ['button', 'button--secondary'],

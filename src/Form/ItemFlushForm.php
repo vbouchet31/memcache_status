@@ -11,7 +11,7 @@ use Drupal\memcache\Driver\MemcacheDriverFactory;
 use Drupal\memcache_status\MemcacheStatusHelper;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class ItemFlushConfirmForm extends ConfirmFormBase {
+class ItemFlushForm extends ConfirmFormBase {
 
   protected $key;
 
