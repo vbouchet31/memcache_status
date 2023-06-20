@@ -246,6 +246,11 @@ function memcache_status_views_pre_render($view) {
       '#markup' => t('Last refresh: @refresh_date - <a href="/admin/reports/memcache-status/items/refresh">Refresh</a>', ['@refresh_date' => \Drupal::service('date.formatter')->format($last_refresh_time)]),
     ];
   }
+
+  // The raw key is stored decoded in the database.
+  foreach ($view->result as $index => $result) {
+    $view->result[$index]->memcache_status_dump_data_raw_key = rawurlencode(urlencode($view->result[$index]->memcache_status_dump_data_raw_key));
+  }
 }
 
 /**
