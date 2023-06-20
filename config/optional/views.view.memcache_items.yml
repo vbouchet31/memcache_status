@@ -742,7 +742,7 @@ display:
         options:
           perm: 'access memcache status'
       cache:
-        type: tag
+        type: memcache_items_list_tag
         options: {  }
       empty: {  }
       sorts: {  }
