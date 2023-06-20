@@ -2,6 +2,7 @@
 
 namespace Drupal\memcache_status\Form;
 
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -50,7 +51,7 @@ class ItemFlushConfirmForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, string $key = NULL) {
-    $this->key = $key;
+    $this->key = rawurldecode($key);
     return parent::buildForm($form, $form_state);
   }
 
@@ -88,6 +89,7 @@ class ItemFlushConfirmForm extends ConfirmFormBase {
     if ($result) {
       $count = $this->database->delete('memcache_status_dump_data')->condition('raw_key', $this->key)->execute();
       if ($count) {
+        Cache::invalidateTags(['memcache_list:items']);
         $this->messenger()->addMessage($this->t('The item %key has been flushed from memcache and removed from the items dumped into the database.', ['%key' => $this->key]));
       }
       else {
