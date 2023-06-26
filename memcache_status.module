@@ -167,6 +167,13 @@ function memcache_status_views_data() {
           'id' => 'numeric',
         ],
       ],
+      'memcache_item_bulk_form' => [
+        'title' => t('Memcache item operations bulk form'),
+        'help' => t('Add a form element that lets you run operations on multiple memcache items.'),
+        'field' => [
+          'id' => 'memcache_item_bulk_form',
+        ],
+      ],
     ],
   ];
 }

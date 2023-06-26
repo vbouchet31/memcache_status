@@ -26,16 +26,6 @@ memcache_status.item.get:
   requirements:
     _permission: access memcache status
 
-memcache_status.item.edit:
-  path: '/admin/reports/memcache-status/item/{key}/edit'
-  defaults:
-    _form: Drupal\memcache_status\Form\ItemEditForm
-    _title: Edit item
-  options:
-    _admin_route: TRUE
-  requirements:
-    _permission: access memcache status
-
 memcache_status.item.flush:
   path: '/admin/reports/memcache-status/item/{key}/flush'
   defaults:
@@ -43,6 +33,14 @@ memcache_status.item.flush:
     _title: Flush item
   options:
     _admin_route: TRUE
+  requirements:
+    _permission: access memcache status
+
+memcache_status.item.flush_multiple:
+  path: '/admin/reports/memcache-status/items/flush'
+  defaults:
+    _form: Drupal\memcache_status\Form\ItemMultipleFlushForm
+    _title: Flush items
   requirements:
     _permission: access memcache status
 
