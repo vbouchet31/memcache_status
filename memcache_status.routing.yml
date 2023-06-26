@@ -44,6 +44,14 @@ memcache_status.item.flush_multiple:
   requirements:
     _permission: access memcache status
 
+memcache_status.item.view_aside:
+  path: '/admin/reports/memcache-status/items/compare'
+  defaults:
+    _controller: Drupal\memcache_status\Controller\ItemViewAside::render
+    _title: View items aside
+  requirements:
+    _permission: access memcache status
+
 memcache_status.reports:
   path: '/admin/reports/memcache-status'
   defaults:

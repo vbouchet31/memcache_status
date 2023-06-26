@@ -170,8 +170,6 @@ class MemcacheItemBulkForm extends FieldPluginBase {
     $selected = array_filter($user_input[$this->options['id']]);
     $action = $form_state->getValue('action');
 
-    dsm($selected);
-
     if ($action === 'flush') {
       \Drupal::service('tempstore.private')->get('memcache_item_bulk_flush')->set(\Drupal::currentUser()->id(), array_values($selected));
 
@@ -180,16 +178,14 @@ class MemcacheItemBulkForm extends FieldPluginBase {
       ];
       $form_state->setRedirect('memcache_status.item.flush_multiple', [], $options);
     }
-  }
+    elseif ($action === 'view_aside') {
+      \Drupal::service('tempstore.private')->get('memcache_item_view_aside')->set(\Drupal::currentUser()->id(), array_values($selected));
 
-  /**
-   * Returns the message to be displayed when there are no selected items.
-   *
-   * @return string
-   *   Message displayed when no items are selected.
-   */
-  protected function emptySelectedMessage() {
-    return $this->t('No items selected.');
+      $options = [
+        'query' => $this->getDestinationArray(),
+      ];
+      $form_state->setRedirect('memcache_status.item.view_aside', [], $options);
+    }
   }
 
   /**
@@ -198,7 +194,12 @@ class MemcacheItemBulkForm extends FieldPluginBase {
   public function viewsFormValidate(&$form, FormStateInterface $form_state) {
     $ids = $form_state->getValue($this->options['id']);
     if (empty($ids) || empty(array_filter($ids))) {
-      $form_state->setErrorByName('', $this->emptySelectedMessage());
+      $form_state->setErrorByName('', $this->t('No items selected.'));
+    }
+
+    $action = $form_state->getValue('action');
+    if ($action === 'view_aside' && count(array_filter($ids)) > 3) {
+      $form_state->setErrorByName('', $this->t('Impossible to compare more than 3 items. Please select less items.'));
     }
   }
 }
