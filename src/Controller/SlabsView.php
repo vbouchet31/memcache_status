@@ -156,7 +156,7 @@ class SlabsView extends ControllerBase {
     foreach ($slabs as $server_name => $slab_data) {
       // If there is multiple servers, be sure the "View items" link contains
       // the filtering per server.
-      $default_query = $servers ? ['server[]' => $server_name] : [];
+      $default_query = count($servers) > 1 ? ['server[]' => $server_name] : [];
 
       $server_build = [];
       foreach ($slab_data as $index => $data) {

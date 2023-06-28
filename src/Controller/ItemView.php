@@ -3,6 +3,7 @@
 namespace Drupal\memcache_status\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Url;
 use Drupal\memcache\Driver\MemcacheDriverFactory;
 use Drupal\memcache_status\MemcacheStatusHelper;
@@ -10,9 +11,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class ItemView extends ControllerBase {
 
-  public function __construct(MemcacheDriverFactory $memcacheDriverFactory, MemcacheStatusHelper $memcache_status_helper) {
+  public function __construct(MemcacheDriverFactory $memcacheDriverFactory, MemcacheStatusHelper $memcache_status_helper, DateFormatterInterface $date_formatter) {
     $this->memcacheDriverFactory = $memcacheDriverFactory;
     $this->memcacheStatusHelper = $memcache_status_helper;
+    $this->dateFormatter = $date_formatter;
   }
 
   /**
@@ -27,6 +29,7 @@ class ItemView extends ControllerBase {
     return new static(
       $container->get('memcache.factory'),
       $container->get('memcache_status.memcache_helper'),
+      $container->get('date.formatter'),
     );
   }
 
@@ -45,7 +48,7 @@ class ItemView extends ControllerBase {
           '#header' => [],
           '#rows'   => [
             ['cid', $data->cid],
-            ['created', $data->created],
+            ['created', $this->dateFormatter->format((int) $data->created)],
             ['expire', $data->expire],
             ['tags', ['data' => [
               '#theme' => 'item_list',
@@ -55,15 +58,6 @@ class ItemView extends ControllerBase {
             ['data', [ 'data' => [
               '#markup' => '<pre>' . var_export($data->data, TRUE) . '</pre>',
             ]]],
-          ],
-        ],
-        [
-          '#type' => 'link',
-          '#title' => $this->t('Edit'),
-          // @TODO: Use Route instead and forward the destination.
-          '#url' => Url::fromUri('base:/admin/reports/memcache-status/item/' . $key . '/edit'),
-          '#attributes' => [
-            'class' => ['button', 'button--primary'],
           ],
         ],
         [
