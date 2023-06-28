@@ -179,6 +179,21 @@ function memcache_status_views_data() {
 }
 
 /**
+ * Implements hook_menu_local_tasks_alter().
+ */
+function memcache_status_menu_local_tasks_alter(&$data, $route_name) {
+  if ($route_name === 'memcache_status.servers') {
+    $servers = Drupal::service('memcache.factory')->get('cache')->getMemcache()->getServerList();
+
+    // If there is only one server defined, we use the singular for "Servers"
+    // tab.
+    if (count($servers) === 1) {
+      $data['tabs'][0]['memcache_status.servers']['#link']['title'] = 'Server';
+    }
+  }
+}
+
+/**
  * Implements hook_views_post_render().
  */
 function memcache_status_views_post_render(ViewExecutable $view, array &$output, CachePluginBase $cache) {
