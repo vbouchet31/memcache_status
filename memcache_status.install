@@ -87,7 +87,7 @@ function memcache_status_schema() {
         'default' => '',
       ]
     ],
-    'primary key' => ['cas'],
+    'primary key' => ['server', 'cas'],
     'indexes' => [
       'server' => ['server'],
       'bin' => ['bin'],
