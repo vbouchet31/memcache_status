@@ -1,11 +1,11 @@
 # Memcache Status
 
-** This is work in progress module. It probably does not support all the possible
+**This is work in progress module. It probably does not support all the possible
 memcache setups. In case of problem, please report in the queue so we can improve
-the module to be compatible with more situations. **
+the module to be compatible with more situations.**
 
-** The main difference with other modules or tools, it uses `lru_crawler metadump`
-command which does not lock the cache and can return all items, not just 1MB worth.
+**The main difference with other modules or tools, it uses `lru_crawler metadump`
+command which does not lock the cache and can return all items, not just 1MB worth.**
 
 ## Summary:
 
