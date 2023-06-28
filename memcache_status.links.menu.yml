@@ -1,11 +1,5 @@
-memcache_status.settings:
-  title: Memcache status
-  description: Configure the memcache status reports.
-  parent: system.admin_config_system
-  route_name: memcache_status.settings
-
-memcache_status.reports:
+memcache_status.servers:
   title: Memcache status
   description: View statistics and browse memcache content.
   parent: system.admin_reports
-  route_name: memcache_status.reports
+  route_name: memcache_status.servers

@@ -1,0 +1,16 @@
+memcache_status.servers:
+  route_name: memcache_status.servers
+  base_route: memcache_status.servers
+  title: Servers
+
+memcache_status.slabs:
+  route_name: memcache_status.slabs
+  base_route: memcache_status.servers
+  title: Slabs
+  weight: 20
+
+view.memcache_items.page_1:
+  route_name: view.memcache_items.page_1
+  base_route: memcache_status.servers
+  title: Items
+  weight: 20
