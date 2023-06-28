@@ -4,8 +4,6 @@ package: Performance and scalability
 type: module
 core_version_requirement: '^9.1 || ^10'
 
-configure: memcache_status.settings
-
 dependencies:
   - memcache:memcache
 
